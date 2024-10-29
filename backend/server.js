@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+HEAD
 // JWT Secret from .env
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
@@ -37,6 +38,8 @@ const authenticateJWT = (req, res, next) => {
         next();
     });
 };
+
+
 
 app.get('/', (req, res) => {
     res.send('Welcome to the API!'); // Response for root path
@@ -63,6 +66,7 @@ const customerSchema = new mongoose.Schema({
 });
 
 
+ HEAD
 const Customer = mongoose.model('Customer', customerSchema);
 
 // Reply schema and model
@@ -84,7 +88,8 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-// Signup endpoint
+
+
 app.post(
     '/signup',
     [
@@ -165,6 +170,7 @@ app.post(
     }
 );
 
+ HEAD
 // Collect customer information endpoint
 app.post('/collect-customer-info', authenticateJWT, async (req, res) => {
     const { name, age, businessType, location, email } = req.body;
@@ -302,6 +308,8 @@ app.post('/incoming', async (req, res) => {
     }
 });
 
+
+ 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
