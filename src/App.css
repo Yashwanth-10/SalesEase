@@ -1,0 +1,228 @@
+/* Global Styling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+  transition: all 0.5s ease-in-out; /* Slower, smoother transitions */
+}
+
+body {
+  background: linear-gradient(120deg, #fcb045, #fd1d1d, #833ab4);
+  background-size: 400% 400%;
+  animation: gradientBg 20s ease infinite; /* Slower background animation */
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1, h2, h3 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes gradientBg {
+  0% {
+      background-position: 0% 50%;
+  }
+  50% {
+      background-position: 100% 50%;
+  }
+  100% {
+      background-position: 0% 50%;
+  }
+}
+
+button, input {
+  outline: none;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.4s ease, transform 0.4s ease;
+}
+
+button:hover {
+  transform: scale(1.03); /* Subtle scaling */
+  background-color: #fcb045;
+  color: #fff;
+}
+
+input {
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 1.1rem;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+input::placeholder {
+  color: #ddd;
+}
+
+input:focus {
+  background-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 4px 10px rgba(255, 255, 255, 0.4);
+}
+
+label {
+  display: block;
+  margin-bottom: 7px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Navigation Bar */
+nav {
+  display: flex;
+  justify-content: center;
+  background-color: var(--primary-color);
+  padding: 15px 0;
+  margin-bottom: 40px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  padding: 0 15px;
+  font-size: 1.2rem;
+  transition: color 0.3s ease;
+}
+
+nav a:hover {
+  color: var(--secondary-color);
+}
+
+/* Buttons */
+button {
+  background: linear-gradient(45deg, #fd1d1d, #fcb045);
+  border: none;
+  color: white;
+  padding: 12px 25px;
+  border-radius: 30px;
+  cursor: pointer;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  transition: all 0.4s ease; /* Smoother transition */
+}
+
+button:hover {
+  background: linear-gradient(45deg, #833ab4, #fd1d1d, #fcb045);
+}
+
+/* Page Container */
+div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Form Styling */
+form {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 30px; /* Increased padding */
+  border-radius: 20px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+input, textarea {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  padding: 15px;
+  color: #fff;
+  margin-bottom: 20px;
+  width: 100%;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+input:hover, textarea:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+input:focus, textarea:focus {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.4);
+}
+
+
+/* Admin Dashboard Styles */
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.dashboard-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  width: 100%;
+  max-width: 250px;
+  transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+  transform: translateY(-5px);
+}
+
+.dashboard-card h2 {
+  color: var(--primary-color);
+  font-size: 1.8rem;
+}
+
+.dashboard-card p {
+  font-size: 1rem;
+  color: #666;
+}
+
+/* Button for Admin Dashboard */
+.dashboard-button {
+  background-color: var(--secondary-color);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.dashboard-button:hover {
+  background-color: var(--primary-color);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  nav a {
+      font-size: 1rem;
+      padding: 0 10px;
+  }
+
+  form {
+      width: 95%;
+  }
+
+  .dashboard-container {
+      flex-direction: column;
+      gap: 20px;
+  }
+
+  .dashboard-card {
+      max-width: 100%;
+  }
+}
