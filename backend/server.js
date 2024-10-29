@@ -20,7 +20,9 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
+ HEAD
  // JWT Secret from .env
+
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     throw new Error('JWT_SECRET is not defined in the environment variables!');
@@ -83,6 +85,40 @@ const transporter = nodemailer.createTransport({
         pass: process.env.GMAIL_PASS,
     },
 });
+
+HEAD
+
+
+
+// Gemini API Key
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+// Initialize Google Generative AI
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+// Function to call Google Generative AI to generate unique email response
+const generateUniqueResponse = async (name, age, businessType, location) => {
+    const prompt = `Generate a professional thank-you email from Sahaya Henith of SalesEase, expressing appreciation to ${name} for their interest. Mention admiration for their achievements in ${businessType}, based in ${location}. Invite them to connect for a call within the next few working days to discuss how SalesEase can support their business goals and offer any additional information they may need.`;
+    const maxRetries = 3;
+    let attempt = 0;
+
+    while (attempt < maxRetries) {
+        try {
+            const result = await model.generateContent(prompt);
+            return result.response.text();
+        } catch (error) {
+            console.error(`Attempt ${attempt + 1} failed:`, error);
+            attempt++;
+            if (attempt < maxRetries) {
+                await new Promise(res => setTimeout(res, 1000));
+            } else {
+                throw new Error('Failed to generate text after multiple attempts');
+            }
+        }
+    }
+};
+
 
 // Signup endpoint
 app.post(
@@ -262,6 +298,56 @@ app.get('/admin/users/:userId/customers', async (req, res) => {
         res.status(500).json({ message: 'Error fetching customers' });
     }
 });
+
+HEAD
+
+app.patch('/customers/:customerId/interest', async (req, res) => {
+    const { customerId } = req.params;
+    const { interested } = req.body; // Expecting { interested: true } or { interested: false }
+
+    try {
+        const updatedCustomer = await Customer.findByIdAndUpdate(
+            customerId,
+            { interested },
+            { new: true } // Return the updated document
+        );
+
+        if (!updatedCustomer) {
+            return res.status(404).json({ message: 'Customer not found' });
+        }
+
+        res.status(200).json(updatedCustomer);
+    } catch (error) {
+        console.error('Error updating customer interest:', error);
+        res.status(500).json({ message: 'Error updating customer interest' });
+    }
+});
+
+
+
+app.get('/confirm-interest/:customerId', async (req, res) => {
+    const { customerId } = req.params;
+
+    try {
+        // Find the customer by their ID
+        const customer = await Customer.findById(customerId);
+        if (!customer) {
+            return res.status(404).send('C+ustomer not found.');
+        }
+
+        // Mark the customer as interested
+        customer.interested = true;
+        await customer.save();
+
+        // Redirect to the confirmation page
+        const confirmationPageUrl = `${process.env.BASE_URL}/ConfirmationPage`; // Set this to your frontend confirmation page URL
+        res.redirect(confirmationPageUrl);
+    } catch (error) {
+        console.error('Error updating customer interest:', error);
+        res.status(500).send('Error processing your request.');
+    }
+});
+
 
 
 
