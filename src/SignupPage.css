@@ -1,0 +1,63 @@
+/* Signup Page Styling */
+.signup-container {
+    max-width: 600px; /* Increased width */
+    padding: 30px;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 30px;
+    box-shadow: 0px 4px 30px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(12px);
+}
+
+.signup-container a {
+    color: #fcb045;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.4s ease;
+}
+
+.signup-container a:hover {
+    color: #fd1d1d;
+}
+
+input {
+    border-radius: 5px;
+    border: 1px solid #dbdbdb;
+    padding: 10px;
+    font-size: 14px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.password-container {
+    position: relative;
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 10px;
+    top: 35px;
+    cursor: pointer;
+}
+
+button {
+    width: 100%;
+    margin-top: 20px;
+}
+
+h2 {
+    margin-bottom: 30px;
+    font-size: 24px;
+}
+
+p {
+    font-size: 14px;
+    color: #8e8e8e;
+}
+
+.errorMessage {
+    color: #ed4956;
+}
+
+.successMessage {
+    color: #78C82A;
+}

@@ -1,0 +1,27 @@
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    border-bottom: 1px solid #dbdbdb;
+    padding: 20px;
+}
+
+li:last-child {
+    border-bottom: none;
+}
+
+strong {
+    display: block;
+    margin-bottom: 5px;
+}
+
+h1 {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+p {
+    color: #8e8e8e;
+}
