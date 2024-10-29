@@ -20,9 +20,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log('MongoDB connected'))
     .catch(err => console.error('MongoDB connection error:', err));
 
- HEAD
- // JWT Secret from .env
-
+// JWT Secret from .env
 const JWT_SECRET = process.env.JWT_SECRET;
 if (!JWT_SECRET) {
     throw new Error('JWT_SECRET is not defined in the environment variables!');
@@ -64,7 +62,6 @@ const customerSchema = new mongoose.Schema({
     interested: { type: Boolean, default: false }, // Track interest
 });
 
-
 const Customer = mongoose.model('Customer', customerSchema);
 
 // Reply schema and model
@@ -85,10 +82,6 @@ const transporter = nodemailer.createTransport({
         pass: process.env.GMAIL_PASS,
     },
 });
-
-HEAD
-
-
 
 // Gemini API Key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
@@ -118,7 +111,6 @@ const generateUniqueResponse = async (name, age, businessType, location) => {
         }
     }
 };
-
 
 // Signup endpoint
 app.post(
@@ -250,10 +242,6 @@ app.post('/collect-customer-info', authenticateJWT, async (req, res) => {
                     `,
                 };
 
-
-                
-
-
                 await transporter.sendMail(mailOptions);
                 console.log(`Email sent to ${customerData.email}`);
             } catch (error) {
@@ -271,124 +259,34 @@ app.post('/collect-customer-info', authenticateJWT, async (req, res) => {
 // Get all users with count of forms collected
 app.get('/admin/users', async (req, res) => {
     try {
-        const users = await User.find().select('_id name email');
-        const usersWithCount = await Promise.all(users.map(async user => {
-            const count = await Customer.countDocuments({ userId: user._id });
-            return { ...user.toObject(), customerCount: count };
-        }));
-        res.status(200).json(usersWithCount);
+        const users = await User.aggregate([
+            {
+                $lookup: {
+                    from: 'customers',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'customers'
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    name: 1,
+                    email: 1,
+                    formCount: { $size: "$customers" },
+                    customers: 1
+                }
+            }
+        ]);
+
+        res.status(200).json(users);
     } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ message: 'Error fetching users' });
+        console.error('Error fetching user data:', error);
+        res.status(500).json({ message: 'Error retrieving user data.' });
     }
 });
 
-// Get customers for a specific user
-// Backend: Fetch customers of a specific user
-app.get('/admin/users/:userId/customers', async (req, res) => {
-    const { userId } = req.params;
-
-    try {
-        const customers = await Customer.find({ userId });
-
-        // Send the customers as-is (keep interested as boolean)
-        res.status(200).json(customers);
-    } catch (error) {
-        console.error('Error fetching customers:', error);
-        res.status(500).json({ message: 'Error fetching customers' });
-    }
-});
-
-HEAD
-
-app.patch('/customers/:customerId/interest', async (req, res) => {
-    const { customerId } = req.params;
-    const { interested } = req.body; // Expecting { interested: true } or { interested: false }
-
-    try {
-        const updatedCustomer = await Customer.findByIdAndUpdate(
-            customerId,
-            { interested },
-            { new: true } // Return the updated document
-        );
-
-        if (!updatedCustomer) {
-            return res.status(404).json({ message: 'Customer not found' });
-        }
-
-        res.status(200).json(updatedCustomer);
-    } catch (error) {
-        console.error('Error updating customer interest:', error);
-        res.status(500).json({ message: 'Error updating customer interest' });
-    }
-});
-
-
-
-app.get('/confirm-interest/:customerId', async (req, res) => {
-    const { customerId } = req.params;
-
-    try {
-        // Find the customer by their ID
-        const customer = await Customer.findById(customerId);
-        if (!customer) {
-            return res.status(404).send('C+ustomer not found.');
-        }
-
-        // Mark the customer as interested
-        customer.interested = true;
-        await customer.save();
-
-        // Redirect to the confirmation page
-        const confirmationPageUrl = `${process.env.BASE_URL}/ConfirmationPage`; // Set this to your frontend confirmation page URL
-        res.redirect(confirmationPageUrl);
-    } catch (error) {
-        console.error('Error updating customer interest:', error);
-        res.status(500).send('Error processing your request.');
-    }
-});
-
-
-
-
-app.get('/customers/:customerId', authenticateJWT, async (req, res) => {
-    const { customerId } = req.params;
-    try {
-        const customer = await Customer.findById(customerId);
-        if (!customer) {
-            return res.status(404).json({ message: 'Customer not found.' });
-        }
-        res.status(200).json(customer);
-    } catch (error) {
-        console.error('Error fetching customer:', error);
-        res.status(500).json({ message: 'Error fetching customer.' });
-    }
-});
-
-
-
-
-// Incoming emails route to handle Mailgun webhooks
-app.post('/incoming', async (req, res) => {
-    const replyData = req.body;
-    const newReply = new Reply({
-        sender: replyData.sender,
-        subject: replyData.subject,
-        body: replyData.body,
-        customerId: replyData.customerId,
-    });
-
-    try {
-        await newReply.save();
-        console.log('Reply saved successfully!');
-        res.status(200).send({ message: 'Reply saved!' });
-    } catch (error) {
-        console.error('Error saving reply:', error);
-        res.status(500).json({ message: 'Failed to save reply.' });
-    }
-});
-
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
